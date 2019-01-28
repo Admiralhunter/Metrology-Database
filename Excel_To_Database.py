@@ -74,7 +74,7 @@ def main():
             failure = False
         except PermissionError:  # if error arises from workbook being opened wait and try again
             if attempts < 2:
-                time.sleep(3)  # if an errors occurs, wait 5 mins to try again.
+                time.sleep(180)  # if an errors occurs, wait 3 mins to try again.
                 attempts = attempts + 1
                 continue
             else:  # if errors are persistent then just stop and send an email letting someone know
@@ -92,6 +92,8 @@ def main():
 
         try:  # Tries to read each file and gather the data
             Data = pd.read_excel(DBlinks.iat[i, 0], header=None)
+            Data.replace(0, np.nan, inplace= True)
+
         except FileNotFoundError:
             text = DBlinks.iat[i, 0] + " can not be found and opened. Check to ensure that the file exists" \
                                        " at the correct location."
@@ -152,7 +154,8 @@ def main():
         insert_data(tablename, Data, DBlinks, i, database)  # Inputs data into table for Database
     testtime = datetime.datetime.now()
 
-    if testtime.hour == 9  and  testtime.minute < 10:  # this works, just pick a time for it to run
+    #if testtime.hour == 9  and  testtime.minute < 10:  # this works, just pick a time for it to run
+    if True:
         data_integrity_check(database)
 
 ######################################
@@ -194,7 +197,6 @@ def data_integrity_check(database):
         data.columns = column_names
 
         col_null_totals = data.count()  # get count of all Null, None, Nan of each column
-        col_null_totals['Job_Number'] = 6
         col_null = col_null_totals[(col_null_totals != data.shape[0]) & (col_null_totals != 0)]  # check to see if any
         # column has a count of missing values that are not either 0 (not missing any data) or equal to the number
         # of rows (some columns never get data due to us unable to measure the spot)
@@ -310,9 +312,10 @@ def check_for_table(partname, parameters, database):
         c.execute(command)
         conn.commit()
         c.close()
-    except TypeError:
+    except sqlite3.OperationalError:
         text = "This is an automated email alerting you that the Excel_To_Database.py file had" \
-               " an error in the check_for_table function."
+               " an error in the check_for_table function. The database is most likely being used and locked. Save changes" \
+               "to database and close the file. Then rerun the data."
         recipient = "hpalcich@MicroTekFinishing.com"
         subject = "Automated Message: Excel_To_Database.py check_for_table function Error"
         send_mail_via_com(text, subject, recipient)
@@ -355,7 +358,7 @@ def insert_data(partname, Data, DBlinks, i, database):
             failure = False
         except PermissionError:  # if error arises from workbook being opened wait and try again
             if attempts < 2:
-                time.sleep(3)  # if an errors occurs, wait 5 mins to try again.
+                time.sleep(180)  # if an errors occurs, wait 3 mins to try again.
                 attempts = attempts + 1
                 print('attempt ', attempts)
                 continue
