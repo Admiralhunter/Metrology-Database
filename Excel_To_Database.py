@@ -47,7 +47,7 @@ def main():
 
         text = "This is an automated email alerting you that the Excel_To_Database.py file can" \
                " not find the" + link + " file. Most likely someone has moved or deleted it."
-        recipient = "hpalcich@MicroTekFinishing.com"
+        recipient = "fakeemail@abc.com"
         subject = "Automated Message: Excel_To_Database.py Workbook Open Error"
         send_mail_via_com(text, subject, recipient)
 
@@ -81,7 +81,7 @@ def main():
 
                 text = "This is an automated email alerting you that the Excel_To_Database.py file can" \
                        " not save the LinkBetweenQCandDatabsLocstest.xlsx file. Most likely someone has it open."
-                recipient = "hpalcich@MicroTekFinishing.com"
+                recipient = "fakeemail@abc.com"
                 subject = "Automated Message: Excel_To_Database.py Workbook Save Error"
                 send_mail_via_com(text, subject, recipient)
                 failure = False
@@ -97,7 +97,7 @@ def main():
         except FileNotFoundError:
             text = DBlinks.iat[i, 0] + " can not be found and opened. Check to ensure that the file exists" \
                                        " at the correct location."
-            recipient = "hpalcich@MicroTekFinishing.com"
+            recipient = "fakeemail@abc.com"
             subject = "Automated Message: Excel_To_Database.py Workbook Open Error"
             send_mail_via_com(text, subject, recipient)
 
@@ -250,7 +250,7 @@ def data_integrity_check(database):
 
     if final_text != "":
         text = final_text + " Please manually check database for the errors."
-        recipient = "hpalcich@MicroTekFinishing.com"
+        recipient = "fakeemail@abc.com"
         subject = "Automated Message: Excel_To_Database.py Database Integrity Error"
         send_mail_via_com(text, subject, recipient)
 
@@ -264,7 +264,7 @@ def send_mail_via_com(text, subject, recipient):
     Msg = o.CreateItem(0)
     Msg.To = recipient
 
-    # Msg.CC = "drichards@MicroTekFinishing.com"
+    # Msg.CC = "fakeemail@abc.com"
 
     Msg.Subject = subject
     Msg.Body = text
@@ -316,7 +316,7 @@ def check_for_table(partname, parameters, database):
         text = "This is an automated email alerting you that the Excel_To_Database.py file had" \
                " an error in the check_for_table function. The database is most likely being used and locked. Save changes" \
                "to database and close the file. Then rerun the data."
-        recipient = "hpalcich@MicroTekFinishing.com"
+        recipient = "fakeemail@abc.com"
         subject = "Automated Message: Excel_To_Database.py check_for_table function Error"
         send_mail_via_com(text, subject, recipient)
 
@@ -367,7 +367,7 @@ def insert_data(partname, Data, DBlinks, i, database):
 
                 text = "This is an automated email alerting you that the Excel_To_Database.py file can" \
                        " not save the " + DBlinks.iat[x, 0] + " file. Most likely someone has it open."
-                recipient = "hpalcich@MicroTekFinishing.com"
+                recipient = "fakeemail@abc.com"
                 subject = "Automated Message: Excel_To_Database.py Workbook Save Error"
                 send_mail_via_com(text, subject, recipient)
                 failure = False
