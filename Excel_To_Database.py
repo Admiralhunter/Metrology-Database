@@ -21,7 +21,6 @@ def main():
     # Checks to see if master database for Metrology exists
     # if the .db doesnt exist then the file will be created.
     try:
-        #conn = sqlite3.connect('file:MetrologyData.sqlite?mode=rw', uri=True)
         conn = sqlite3.connect(databaseconn, uri=True)
         c = conn.cursor()
         c.close()
@@ -47,7 +46,7 @@ def main():
 
         text = "This is an automated email alerting you that the Excel_To_Database.py file can" \
                " not find the" + link + " file. Most likely someone has moved or deleted it."
-        recipient = "fakeemail@abc.com"
+        recipient = "hpalcich@MicroTekFinishing.com"
         subject = "Automated Message: Excel_To_Database.py Workbook Open Error"
         send_mail_via_com(text, subject, recipient)
 
@@ -81,7 +80,7 @@ def main():
 
                 text = "This is an automated email alerting you that the Excel_To_Database.py file can" \
                        " not save the LinkBetweenQCandDatabsLocstest.xlsx file. Most likely someone has it open."
-                recipient = "fakeemail@abc.com"
+                recipient = "hpalcich@MicroTekFinishing.com"
                 subject = "Automated Message: Excel_To_Database.py Workbook Save Error"
                 send_mail_via_com(text, subject, recipient)
                 failure = False
@@ -97,7 +96,7 @@ def main():
         except FileNotFoundError:
             text = DBlinks.iat[i, 0] + " can not be found and opened. Check to ensure that the file exists" \
                                        " at the correct location."
-            recipient = "fakeemail@abc.com"
+            recipient = "hpalcich@MicroTekFinishing.com"
             subject = "Automated Message: Excel_To_Database.py Workbook Open Error"
             send_mail_via_com(text, subject, recipient)
 
@@ -107,6 +106,8 @@ def main():
             if firstrow != -1:
                 firstrow = j
                 break
+
+        print(firstrow)
 
         headers = [Data.iloc[0, :]]  # Give headers to our Dataframe for easier data manipulation
         for j in range(1, firstrow):
@@ -151,10 +152,10 @@ def main():
 
 
         check_for_table(tablename, Data.columns.values.tolist(), database)  # Checks if table for part exists, else creates one
-        insert_data(tablename, Data, DBlinks, i, database)  # Inputs data into table for Database
+        insert_data(tablename, Data, DBlinks, i, database, firstrow)  # Inputs data into table for Database
     testtime = datetime.datetime.now()
 
-    #if testtime.hour == 9  and  testtime.minute < 10:  # this works, just pick a time for it to run
+    # if testtime.hour == 9  and  testtime.minute < 10:  # this works, just pick a time for it to run
     if True:
         data_integrity_check(database)
 
@@ -250,7 +251,7 @@ def data_integrity_check(database):
 
     if final_text != "":
         text = final_text + " Please manually check database for the errors."
-        recipient = "fakeemail@abc.com"
+        recipient = "hpalcich@MicroTekFinishing.com"
         subject = "Automated Message: Excel_To_Database.py Database Integrity Error"
         send_mail_via_com(text, subject, recipient)
 
@@ -264,7 +265,7 @@ def send_mail_via_com(text, subject, recipient):
     Msg = o.CreateItem(0)
     Msg.To = recipient
 
-    # Msg.CC = "fakeemail@abc.com"
+    # Msg.CC = "drichards@MicroTekFinishing.com"
 
     Msg.Subject = subject
     Msg.Body = text
@@ -316,12 +317,12 @@ def check_for_table(partname, parameters, database):
         text = "This is an automated email alerting you that the Excel_To_Database.py file had" \
                " an error in the check_for_table function. The database is most likely being used and locked. Save changes" \
                "to database and close the file. Then rerun the data."
-        recipient = "fakeemail@abc.com"
+        recipient = "hpalcich@MicroTekFinishing.com"
         subject = "Automated Message: Excel_To_Database.py check_for_table function Error"
         send_mail_via_com(text, subject, recipient)
 
 
-def insert_data(partname, Data, DBlinks, i, database):
+def insert_data(partname, Data, DBlinks, i, database, firstrow):
     conn = sqlite3.connect(database)
     c = conn.cursor()
     tablename = partname
@@ -346,7 +347,9 @@ def insert_data(partname, Data, DBlinks, i, database):
 
     wbk = openpyxl.load_workbook(DBlinks.iat[x, 0])
     wks = wbk['Overall Record']
-    wks.delete_rows(5, 4 + nrows)
+
+    if firstrow != -1:
+        wks.delete_rows(firstrow + 1, 4 + nrows)
 
     # write the column back into the excel file and close it
     failure = True
@@ -367,7 +370,7 @@ def insert_data(partname, Data, DBlinks, i, database):
 
                 text = "This is an automated email alerting you that the Excel_To_Database.py file can" \
                        " not save the " + DBlinks.iat[x, 0] + " file. Most likely someone has it open."
-                recipient = "fakeemail@abc.com"
+                recipient = "hpalcich@MicroTekFinishing.com"
                 subject = "Automated Message: Excel_To_Database.py Workbook Save Error"
                 send_mail_via_com(text, subject, recipient)
                 failure = False
